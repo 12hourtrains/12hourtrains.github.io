@@ -5,7 +5,7 @@ pragma solidity ^0.4.25;
 12HourTrains - 100% each 12 hours
 https://12hourtrains.github.io/
 */
-contract 12HourTrains {
+contract TwelHourTrains {
 
     using SafeMath for uint256;
 
@@ -13,15 +13,20 @@ contract 12HourTrains {
     mapping(address => uint256) joined;
     mapping(address => uint256) withdrawals;
     mapping(address => uint256) referrer;
+    mapping(address => uint256) withdraStock;
 
     uint256 public step = 100;
+    uint256 public stock = 0;
+    uint256 public totalPot = 0;
     uint256 public minimum = 10 finney;
     uint256 public stakingRequirement = 2 ether;
     address public ownerWallet;
     address public owner;
+    uint256 public timeWithdrawstock = 0;
 
     event Invest(address investor, uint256 amount);
     event Withdraw(address investor, uint256 amount);
+    event WithdrawShare(address investor, uint256 amount);
     event Bounty(address hunter, uint256 amount);
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
@@ -32,6 +37,7 @@ contract 12HourTrains {
     constructor() public {
         owner = msg.sender;
         ownerWallet = msg.sender;
+        timeWithdrawstock = now + 24 hours;
     }
 
     /**
@@ -90,6 +96,10 @@ contract 12HourTrains {
        investments[msg.sender] = investments[msg.sender].add(msg.value);
        joined[msg.sender] = block.timestamp;
        ownerWallet.transfer(msg.value.mul(5).div(100));
+       // add prize pool
+       stock = stock.add(msg.value.mul(5).div(100));
+       totalPot = totalPot.add(msg.value);
+
        emit Invest(msg.sender, msg.value);
     }
 
@@ -112,7 +122,10 @@ contract 12HourTrains {
     function withdraw() public returns (bool){
         require(joined[msg.sender] > 0);
         uint256 balance = getBalance(msg.sender);
-        if (address(this).balance > balance){
+        if (
+            address(this).balance > balance &&
+            balance <= address(this).balance.sub(stock)
+            ){
             if (balance > 0){
                 withdrawals[msg.sender] = withdrawals[msg.sender].add(balance);
                 msg.sender.transfer(balance);
@@ -123,6 +136,35 @@ contract 12HourTrains {
             return false;
         }
     }
+    /**
+    * @dev bonus share
+    */
+    function withdrawStock() public 
+    {
+         require(joined[msg.sender] > 0);
+         require(timeWithdrawstock < now);
+
+         // calculate share
+         uint256 share = stock.mul(investments[msg.sender]).div(totalPot);
+         uint256 currentWithDraw = withdraStock[msg.sender];
+         
+         if (share <= currentWithDraw) { revert(); }
+
+         uint256 balance = share.sub(currentWithDraw);
+
+         if ( balance > 0 ) {
+            // update withdrawShare
+            withdraStock[msg.sender] = currentWithDraw.add(balance);
+
+            stock = stock.sub(balance);
+            
+            msg.sender.transfer(balance);
+            emit WithdrawShare(msg.sender, balance);
+
+
+         } 
+     }
+    /*
 
     /**
     * @dev Bounty reward
@@ -155,6 +197,20 @@ contract 12HourTrains {
         return withdrawals[_investor];
     }
 
+    function checkWithrawStock(address _investor) public view returns(uint256)
+    {
+        return withdraStock[_investor];
+    }
+    function getYourRewardStock(address _investor) public view returns(uint256)
+    {
+        uint256 share = stock.mul(investments[msg.sender]).div(totalPot);
+        uint256 currentWithDraw = withdraStock[msg.sender];
+        if (share <= currentWithDraw) {
+            return 0;
+        } else {
+            return share.sub(currentWithDraw);
+        }
+    }
     /**
     * @dev Gets investments of the specified address.
     * @param _investor The address to query the the balance of.
@@ -172,6 +228,7 @@ contract 12HourTrains {
     function checkReferral(address _hunter) public view returns (uint256) {
         return referrer[_hunter];
     }
+
 }
 
 /**
