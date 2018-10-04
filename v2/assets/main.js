@@ -1,88 +1,152 @@
 jQuery(function($) {
-    // place bet
-    $('#place-bet').click(function(e) {
+    var isLoadTime = false;
+    var time = 0;
+    var cd;
+    // withdraw stock
+    $('#share_withdraw_btn').click(function(e) {
         e.preventDefault();
-        let lotteryNumber = $('#lottery-number').val();
-        let lotteryBet = web3.toWei($('#lottery-bet').val(), 'ether'); 
-        $('#lottery-number').val('');
-        $('#lottery-bet').val(0.1);
-        $('.lottery-prize').html(0.249);
         window.contractInstance
-            .lottery
+            .withdrawStock
             .sendTransaction(
-            lotteryNumber,
             {
               "from": web3.eth.accounts[0],
               "gas": web3.toHex(400000),
-              "value": lotteryBet
             },
             function (err, result) {}
           );
     });
-    $('#lottery-bet').change(function(e) {
-        e.preventDefault();
-        let lotteryBet = $('#lottery-bet').val();  
-        let prize = lotteryBet * 249 / 100;
-        $('.lottery-prize').html(formatEth(prize));
-    });
-    function loadLotteries() {
-        $.ajax({
-            url: 'https://wolsuki.com:6161/api/lotteries',
-            type: 'GET',
-            data: {},
-            success: function (res) {
-                if (res.code == "SUCCESS") {
-                    let lotteries = res.data.lotteries;
-                    if (lotteries.length > 0) {
-                        let html;
-                        lotteries.forEach(addHtml);
-                        function addHtml(_lottery) {
-                            let prize = "";
-                            if (_lottery.status == 1) {
-                                // win
-                                prize = " : " + formatEth(web3.fromWei(_lottery.lottery_prize, 'ether')) + " ETH";
-                            }
-                            html = html + 
-                                "<tr>" +
-                                    "<td>" + _lottery.player_address + "</td>" +
-                                    "<td>" + web3.fromWei(_lottery.lottery_bet, 'ether') + "</td>" +
-                                    "<td>" + _lottery.lottery_number + "</td>" +
-                                    "<td>" + _lottery.lottery_result + prize + "</td>" +
-                                "</tr>";
-                        }
-                        $('.table-lotteries').find('tbody').html(html);
-                    }
+    function loadTotalPot(contract) {
+        contract
+            .totalPot
+            .call(
+                { 
+                    "from": web3.eth.accounts[0]
+                },
+                function (err, _totalPot) {
+                    if (err) return false;
+                    // $('.total-stock').html(_stock.toNumber());
+                    loadStock(contract, _totalPot.toNumber());
                 }
-            }
-        });
+            );
     }
-    function formatEth (_value) {
-      return parseFloat(parseFloat(_value).toFixed(5));
+    function loadStock(contract, _totalPot) {
+        contract
+            .stock
+            .call(
+                { 
+                    "from": web3.eth.accounts[0]
+                },
+                function (err, _stock) {
+                    if (err) return false;
+                    // $('.total-stock').html(_stock.toNumber());
+                    loadInvestments(contract, _totalPot, _stock.toNumber());
+                }
+            );
     }
-    function loadContractBalance() {
-        window.contractInstance
-          .checkContractBalance
-          .call(
-            {
-              "from": web3.eth.accounts[0],
-            },
-            function (err, result) {
-              if ( err ) return false;
-              let contractBalance = web3.fromWei(result.toNumber(), 'ether');
-              $('.contract-balance').html(contractBalance);
-            }
-          );    
+    function loadInvestments(contract, _totalPot, _stock) {
+        contract
+            .checkInvestments
+            .call(
+                web3.eth.accounts[0],
+                { 
+                    "from": web3.eth.accounts[0]
+                },
+                function (err, _investments) {
+                    if (err) return false;
+                    let investments = web3.fromWei(_investments.toNumber(), 'ether');
+                    $('.total-your-stock').html(investments);
+                    loadYourRewardStock(contract, _totalPot,_stock, _investments.toNumber());
+                }
+            );
+    }
+    function loadYourRewardStock(contract, _totalPot,_stock, _investments) {
+        contract
+            .getYourRewardStock
+            .call(
+                web3.eth.accounts[0],
+                { 
+                    "from": web3.eth.accounts[0]
+                },
+                function (err, _yourReward) {
+                    if (err) return false;
+                    let yourReward = web3.fromWei(_yourReward.toNumber(), 'ether');
+                    $('.reward-stock').html(yourReward);
+                    // calculate your share
+                    let rate = 0;
+                    if (_totalPot > 0) {
+                        rate = _investments / _totalPot;
+                        rate = rate * 100;
+                    }
+                    $('.your-share').html(rate + "%");
+                    //
+                    $('.total-pot').html(web3.fromWei(_totalPot, 'ether'));
+                    $('.total-stock').html(web3.fromWei(_stock, 'ether'));
+                }
+            );
+    } 
+    function loadYourTimeWithdrawRewardStock(contract) {
+         contract
+            .timeWithdrawstock
+            .call(
+                { 
+                    "from": web3.eth.accounts[0]
+                },
+                function (err, _time) {
+                    if (err) return false;
+                    isLoadTime = true;
+                    time = _time.toNumber();
+                    
+
+                }
+            );
+    }
+    function dealNum (val) {
+        let str = Math.floor(val)
+        return (str < 10 ? '0' : '') + str
+    }
+    function getTimeCountDown( time ) {
+
+      return {
+        "day": dealNum(time / (24 * 60 * 60)),
+        "hour": dealNum((time % (24 * 60 * 60)) / (60 * 60)),
+        "min": dealNum((time % (60 * 60)) / 60),
+        "sec": dealNum(time % 60)
+      };
+    }
+    function countdownTime() {
+        let now = (new Date()).getTime() / 1000;
+        if (time == 0) {
+            cd = "00 : 00 : 00";
+        } else if (now > time) {
+           cd = "00 : 00 : 00"; 
+        } else {
+            let _cd = getTimeCountDown(time - now);
+            cd = _cd.hour + " : " + _cd.min + " : " + _cd.sec;
+        }   
+        $('.cd-time').html(cd);
+
     }
     function loadData() {
-        loadLotteries();
+
         if (window.contractInstance) {
-            loadContractBalance();
+            loadTotalPot(window.contractInstance);
+            if (isLoadTime == false) {
+                loadYourTimeWithdrawRewardStock(window.contractInstance);
+            }
         }
     }
     
     setInterval(() => {
         loadData();
+        countdownTime();
     },1000);
+
+
+    
+
+
+
+
 
     /*---Smooth-scroll-*/
     $('a[href^="#_"]').click(function() {

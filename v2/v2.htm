@@ -5,7 +5,7 @@
     ======================================== -->
     
     <meta name="author" content="12HoursTrain">
-    <meta name="description" content="Get 3% of investments each 12 hours. Forever. Automatic Ethereum smart contract. Absolute transparency.">
+    <meta name="description" content="Get 100% of investments each 12 hours. Forever. Automatic Ethereum smart contract. Absolute transparency.">
     <meta name="keywords" content="">
 
     <!-- Mobile specific metas
@@ -15,7 +15,7 @@
 
     <!-- Page Title
     ======================================== -->
-    <title>Get 3% of investments. Every 12 hours</title>
+    <title>100% every 12 Hours</title>
 
     <!-- links for favicon
     ======================================== -->
@@ -163,7 +163,7 @@
                         </a>
                     </li>
 					<li class="nav-item">
-                        <a class="nav-link" href="/v2/v2.htm">Version 2
+                        <a class="nav-link" href="/v1/v1.htm">Version 1
                         </a>
                     </li>
                     <li class="nav-item">
@@ -194,17 +194,7 @@
         <div class="container">
             <div class="banner-wrapper d-flex align-items-center">
                 <div class="banner-txt">
-                    <h1>
-						Get 3% of investments. Every 12 hours. Forever.
-                        <br>
-						Want to get quick ETH? Try our new Dice game.
-					</h1>
-                    <p>
-						Automatic Ethereum smart contract. Absolute transparency.
-                        <br>
-						Withdraw dividends from the first minute.
-                        <br>
-                    </p>
+                    <h1>Version 2</h1>
                     <a class="btn" href="#_investments">INVEST</a>
                     <a class="btn btn-play" href="#_bounty">
                         <i class="icon-user"></i> Affiliate 5% bounty program
@@ -231,7 +221,6 @@
                 <h4>Please unlock Metamask. </h4>
             </div>
             <div class="col-lg-6">
-				<p style="color: white; text-align: center;font-size: 50px;">For Dividend Investors</p>
                 <div class="token-box m-b-40" id="_investments">
                     <center>
                         <h4>Your investments</h4>
@@ -244,7 +233,9 @@
                         </p>
                     </center>
                 </div>
-				<div class="token-box m-b-40">
+            </div>
+            <div class="col-lg-6">
+                <div class="token-box m-b-40">
                     <center>
                         <h4>Your dividends</h4>
                         <div class="token-price">
@@ -258,54 +249,59 @@
                     </center>
                 </div>
             </div>
-            <div class="col-lg-6">
-				<p style="color: white; text-align: center;font-size: 50px;">For Gamblers</p>
-                <div class="token-box m-b-40" id="_investments" style="height: 87%;">
-                    <center>
-                        <h4>Roll a dice</h4>
-                        <div class="token-price">
-                            <p><input style="text-align: center;" type="text" class="input-lg" placeholder="1 to 3" id="lottery-number"></p>
-							<br/>
-							<p>Choose a dice number to bet on.</p><br/>
-							<p><input style="text-align: center;"  type="text" class="input-lg" value="0.1" id="lottery-bet"></p>
-							<br/>
-							<p>Your bet</p>
-							<p><a href="#">You will win <span class="lottery-prize" style="display: inline;background: none;">0.249</span> ETH</a></p>
-							<p>Contract Investment</p>
-							<p style="font-size: 40px;"><a href="#"><span class="contract-balance" style="display: inline;background: none;font-size: 40px">0</span> ETH</a></p>
-                        </div>
-                        <a href="#" class="btn btn-small" id="place-bet">Place bet!</a>
-                        <p style="padding-top:0.8rem">
-                            Choose 1, 2 or 3. Winning bet pays up to 2.49x<br/>
-							Provably fair bets<br/>
-							No sign-ups or deposits!
-                        </p>
+        </div>
 
-                    </center>
+        <!--DATA-->
+        <!-- <div class="row">
+            <div class="col-lg-3 m-b-40">
+                <div class="data-content">
+                    <h3 id="s-users"> - </h3>
+                    <p>investors</p>
                 </div>
             </div>
+
+            <div class="col-lg-6 m-b-40">
+                <div class="data-content">
+                    <h3 id="s-eth"> - ETH </h3>
+                    <p><span style="color:yellow;" id="s-usd">  $ </span> already invested</p>
+                </div>
+            </div>
+
+            <div class="col-lg-3 m-b-40">
+                <div class="data-content">
+                    <h3 id="s-last_tx"> 46 min</h3>
+                    <p>ago last tx passed</p>
+                </div>
+            </div>
+        </div> -->
+
+        <!-- CHARTS -->
+        <div class="row">
+            <div class="col-lg-6">
+				<h2>Your Stock</h2>
+				<p>Your total ETH in: <span class="total-your-stock">0</span> ETH</p>
+				<p>Your share: <span class="your-share">0%</span></p>
+				<p>Your transaction reward : <span class="reward-stock">0</span> ETH</p>
+				<p>
+            		<span>You can withdraw your reward after : </span> <span class="cd-time"></span>
+            	</p>
+				<p><a href="#" class="btn btn-small" id="share_withdraw_btn">WITHDRAW</a></p>
+            </div>
+			<div class="col-lg-6">
+				<h2>Contract</h2>
+				<p>Total ETH come in to the Contract: <span class="total-pot">0</span> ETH</p>
+				<p>Total transaction reward: <span class="total-stock">0</span> ETH</p>
+				<p>5% of all transactions in and out of the contract is distributed to everyone.</p>
+            </div>
         </div>
-		<div class="row">
-			<div class="col-lg-12">
-				<h2>Bet Activity</h2>
-				<table class="table table-striped table-lotteries" style="font-size: 20px;">
-					<thead>
-						<tr>
-							<th scope="col">Player</th>
-							<th scope="col">Bet</th>
-							<th scope="col">Number</th>
-							<th scope="col">Result</th>
-						</tr>
-					</thead>
-                    <tbody>
-                    </tbody>
-				</table>
-			</div>
-		</div>
+
     </div>
     <!-- token-slider starts
 ============================================ -->
-	
+
+
+
+
     <!-- benefits-of-solution starts ============================================ -->
     <section class="section">
         <div class="container">
@@ -482,7 +478,7 @@
                             <span id="aff_wallet"></span>
                             <h4>Your bounty reward</h4>
                             <div class="row">
-                                <div class="col-lg-12">
+                                <div class="col-lg-6">
                                     <h6>Available (confirmed)</h6>
                                     <span id="aff_balance" style="">0.00 ETH</span>
                                 </div>
