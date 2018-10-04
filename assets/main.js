@@ -4,9 +4,9 @@ jQuery(function($) {
         e.preventDefault();
         let lotteryNumber = $('#lottery-number').val();
         let lotteryBet = web3.toWei($('#lottery-bet').val(), 'ether'); 
-        $('#lottery-number').val('');
-        $('#lottery-bet').val(0.1);
-        $('.lottery-prize').html(0.249);
+//        $('#lottery-number').val('');
+//        $('#lottery-bet').val(0.1);
+//        $('.lottery-prize').html(0.249);
         window.contractInstance
             .lottery
             .sendTransaction(
